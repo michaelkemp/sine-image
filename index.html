@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Sine Image</title>
+	<script src="p5.min.js"></script>
+
+	<script>
+
+
+		let img;
+		const MAXAMP = 10;
+		const PIXLESIZE = 20;
+		const LINEWEIGHT = 4;
+
+		function preload() {
+		  img = loadImage('image.png');
+		}
+
+
+		function setup() {
+			createCanvas(img.width * PIXLESIZE, img.height * PIXLESIZE);
+			noStroke();
+			noLoop();
+			img.loadPixels();
+		}
+
+		function draw() {
+			let amp;
+
+			strokeWeight(LINEWEIGHT);
+			stroke(0,0,80);
+			noFill();
+			for (let i = 0; i < img.height; i++) {
+				beginShape();
+			  	for (let j = 0; j < img.width; j++) {
+			  		c = img.get(j,i);
+					amp = map(c[0],0,255,MAXAMP,0);
+			  		for(x=(j*PIXLESIZE);x<(j+1)*PIXLESIZE;x+=.1) {
+			  			xp = map(x,(j*PIXLESIZE),(j+1)*PIXLESIZE,0,TWO_PI);
+						y = sin(xp)*amp + (i*PIXLESIZE) + MAXAMP;
+						vertex(x,y);
+			  		}
+			  	}
+			  	endShape();
+			}			
+
+		}	
+
+	</script>
+
+</head>
+<body>
+</body>
+</html>
