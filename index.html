@@ -18,6 +18,7 @@
 
 
 		function setup() {
+			pixelDensity(displayDensity());
 			createCanvas(img.width * PIXLESIZE, img.height * PIXLESIZE);
 			noStroke();
 			noLoop();
@@ -28,7 +29,7 @@
 			let amp;
 
 			strokeWeight(LINEWEIGHT);
-			stroke(0,0,80);
+			stroke(0,0,128);
 			noFill();
 			for (let i = 0; i < img.height; i++) {
 				beginShape();
