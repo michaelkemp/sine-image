@@ -7,43 +7,61 @@
 	<script>
 
 
-		let img;
+		let img, canvas;
 		const MAXAMP = 10;
 		const PIXLESIZE = 20;
-		const LINEWEIGHT = 4;
+		const LINEWEIGHT = 3;
 
 		function preload() {
-		  img = loadImage('image.png');
+		  img = loadImage('hugh.png');
 		}
 
 
 		function setup() {
 			pixelDensity(displayDensity());
-			createCanvas(img.width * PIXLESIZE, img.height * PIXLESIZE);
-			noStroke();
+			canvas = createCanvas(img.width * PIXLESIZE, img.height * PIXLESIZE);
 			noLoop();
 			img.loadPixels();
 		}
 
 		function draw() {
-			let amp;
-
+			let amp, grey, col;
+			background(255);
 			strokeWeight(LINEWEIGHT);
 			stroke(0,0,128);
 			noFill();
+
 			for (let i = 0; i < img.height; i++) {
 				beginShape();
 			  	for (let j = 0; j < img.width; j++) {
-			  		c = img.get(j,i);
-					amp = map(c[0],0,255,MAXAMP,0);
-			  		for(x=(j*PIXLESIZE);x<(j+1)*PIXLESIZE;x+=.1) {
-			  			xp = map(x,(j*PIXLESIZE),(j+1)*PIXLESIZE,0,TWO_PI);
-						y = sin(xp)*amp + (i*PIXLESIZE) + MAXAMP;
-						vertex(x,y);
+
+			  		// get pixel color
+			  		col = img.get(j,i);
+
+			  		// get greyscale value
+			  		grey = 0.21 * col[0] + 0.72 * col[1] + 0.07 * col[2];
+
+			  		// map greyscale value to amplitude of wave (the blacker the color the larger the amplitude)
+					amp = map(grey,0,255,MAXAMP,0);
+
+					// loop X from 0 to two pi
+			  		for(x=0;x<TWO_PI;x+=PI/90) {
+
+			  			// calculate Y as a sine wave multiplied by amplitude
+						y = sin(x) * amp;
+
+						// position x and y to pixel location
+			  			dx = map(x, 0, TWO_PI, j*PIXLESIZE, (j+1) * PIXLESIZE);
+			  			dy = y + (i*PIXLESIZE) + MAXAMP;
+
+			  			// add vertex to the shape
+						vertex(dx,dy);
 			  		}
 			  	}
 			  	endShape();
-			}			
+			}
+
+			//save(canvas,"lines.png");			
 
 		}	
 
