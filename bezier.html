@@ -44,18 +44,25 @@
 			}
 
 			function createSVG() {
-			    let svg, svgNS, grp, path, str, xPix, yPix, amp;
+			    let svg, svgNS, box, grp, path, str, xPix, yPix, amp;
 
 			    svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+			    svg.setAttribute("xmlns","http://www.w3.org/2000/svg");
+			    svg.setAttribute("id","svg");
 			    svg.setAttribute("width",PIXEL*wide);
 			    svg.setAttribute("height",PIXEL*high);
 			    svgNS = svg.namespaceURI;
+
+			    box = document.createElementNS(svgNS,'rect');
+				box.setAttribute("width",PIXEL*wide);
+				box.setAttribute("height",PIXEL*high);
+				box.setAttribute("fill","#ffffff");
+				svg.appendChild(box);
 
 		        grp = document.createElementNS(svgNS,'g');
 		        grp.setAttribute("stroke","black");
 		        grp.setAttribute("stroke-width",PIXEL/6);
 		        grp.setAttribute("fill","transparent");
-
 
 			    for(let h=0; h<high; ++h) {
 				    path = document.createElementNS(svgNS,'path');
@@ -74,6 +81,15 @@
 				svg.appendChild(grp);
 
 			    document.getElementById("curves").appendChild(svg);
+
+			    // ALLOW SAVE
+				let save = document.getElementById("svg");
+				let serializer = new XMLSerializer();
+				let source = serializer.serializeToString(save);
+				source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+				let url = "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(source);
+				document.getElementById("curves").href = url;
+
 			}   
 
 			function reRange(value, low1, high1, low2, high2) {
@@ -87,7 +103,7 @@
 	</head>
 	<body>
 
-		<div id="curves"></div>
+		<a id="curves" href=""></a>
 
 		<img id="image" src="image.png">
 		<canvas id="canvas"></canvas>
