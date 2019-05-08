@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+	<head>
+
+		<title>Bezier</title>
+		<meta charset="utf-8"/>
+
+		<style>
+			#canvas, #image {
+				display: none;
+			} 
+		</style>
+
+		<script>
+			"use strict";
+
+			const PIXEL = 10;
+			let greyScale = []; 
+			let wide, high;
+
+			function init() {
+				let canvas, context, imageData, image, r,g,b;
+
+				image = document.getElementById('image');
+				wide = image.width;
+				high = image.height;
+
+				canvas = document.getElementById('canvas');
+				context = canvas.getContext('2d');
+				canvas.width = wide;
+		  		canvas.height = high;
+
+		  		context.drawImage(image, 0, 0);
+
+		  		imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+				for (let i = 0; i < imageData.data.length; i += 4) {
+					r = imageData.data[i+0];
+					g = imageData.data[i+1];
+					b = imageData.data[i+2];
+					greyScale[Math.floor(i/4)] = 0.21 * r + 0.72 * g + 0.07 * b;
+				}
+
+				createSVG();
+			}
+
+			function createSVG() {
+			    let svg, svgNS, grp, path, str, xPix, yPix, amp;
+
+			    svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+			    svg.setAttribute("width",PIXEL*wide);
+			    svg.setAttribute("height",PIXEL*high);
+			    svgNS = svg.namespaceURI;
+
+		        grp = document.createElementNS(svgNS,'g');
+		        grp.setAttribute("stroke","black");
+		        grp.setAttribute("stroke-width",PIXEL/6);
+		        grp.setAttribute("fill","transparent");
+
+
+			    for(let h=0; h<high; ++h) {
+				    path = document.createElementNS(svgNS,'path');
+			    	yPix = h * PIXEL + PIXEL / 2;
+			    	str = "M0," + yPix + " ";
+			    	for(let w=0; w<wide; ++w) {
+			    		xPix = w * PIXEL;
+			    		amp = reRange(greyScale[(h*wide) + w], 0, 255, PIXEL, 0);
+			    		str += "Q" + (xPix+PIXEL/4)   + "," + (yPix + amp).toFixed(2) + " " + (xPix+PIXEL/2) + "," + yPix + " "; 
+			    		str += "Q" + (xPix+3*PIXEL/4) + "," + (yPix - amp).toFixed(2) + " " + (xPix+PIXEL)   + "," + yPix + " "; 
+			    	}
+				    path.setAttribute("d",str);
+					grp.appendChild(path);
+			    }
+				
+				svg.appendChild(grp);
+
+			    document.getElementById("curves").appendChild(svg);
+			}   
+
+			function reRange(value, low1, high1, low2, high2) {
+			    return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
+			}
+
+			window.addEventListener('load', init);
+
+		</script>
+
+	</head>
+	<body>
+
+		<div id="curves"></div>
+
+		<img id="image" src="image.png">
+		<canvas id="canvas"></canvas>
+
+	</body>
+
+</html>
